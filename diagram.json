@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "author": "Ruslan Black",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": -106.2,
+      "left": -73.8,
+      "attrs": { "color": "green" }
+    },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -100, "left": 280, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "btn1:1.r", "esp:D5", "magenta", [ "h150.8", "v182.32" ] ],
+    [ "btn1:2.l", "esp:GND.2", "black", [ "h-12.6", "v220.92" ] ],
+    [ "dht1:VCC", "esp:3V3", "red", [ "h-83.8", "v138.7", "h-109.91" ] ],
+    [ "dht1:GND", "esp:GND.1", "black", [ "h41", "v196.3", "h-263.51" ] ],
+    [ "dht1:SDA", "esp:D4", "yellow", [ "v100.3", "h-203.21" ] ]
+  ],
+  "dependencies": {}
+}
