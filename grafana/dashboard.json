@@ -360,7 +360,7 @@
                   "calcs": [
                     "last"
                   ],
-                  "fields": "",
+                  "fields": "/^Останнє отримане значення$/",
                   "values": false
                 },
                 "showPercentChange": false,
@@ -383,7 +383,8 @@
                     ]
                   },
                   "color": {
-                    "mode": "thresholds"
+                    "mode": "fixed",
+                    "fixedColor": "#ad46ff"
                   }
                 },
                 "overrides": []
@@ -422,7 +423,7 @@
                           }
                         ],
                         "filters": [],
-                        "format": "as-is",
+                        "format": "table",
                         "global_query_id": "",
                         "parser": "backend",
                         "root_selector": "",
@@ -459,7 +460,7 @@
                   "calcs": [
                     "lastNotNull"
                   ],
-                  "fields": "",
+                  "fields": "/^Отримано$/",
                   "values": false
                 },
                 "showPercentChange": false,
@@ -482,7 +483,7 @@
                     ]
                   },
                   "color": {
-                    "mode": "thresholds",
+                    "mode": "fixed",
                     "fixedColor": "#ad46ff"
                   }
                 },

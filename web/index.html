@@ -103,9 +103,11 @@
         // "sent" = брокер прийняв команду; підтвердження від ESP32 приходить у топік events
         status.textContent = `Команду "${value}" надіслано о ${new Date().toLocaleTimeString()}`;
       } catch (err) {
-        // TypeError "Failed to fetch" = бекенд не запущений або CORS
         status.className = "error";
-        status.textContent = err.message;
+        // TypeError "Failed to fetch" = до сервера не достукались: бекенд не запущений або CORS
+        status.textContent = err instanceof TypeError
+          ? `Бекенд недоступний (${API_URL}). Чи запущено uvicorn?`
+          : err.message;
       } finally {
         buttons.forEach(b => b.disabled = false);
       }
