@@ -12,9 +12,7 @@
 #define BUTTON_LOGIC_LOW 1
 
 #define STATUS_OK 0b00000000
-#define STATUS_LDR_ERR 0b00000001  // біт 0: LDR помилка
 #define STATUS_DHT_ERR 0b00000010  // біт 1: DHT22 помилка
-#define STATUS_WIFI_ERR 0b00000100 // біт 2: Wi-Fi помилка
 
 // WIFI settings
 #define WIFI_SSID     "Wokwi-GUEST"  // мережа Wokwi симулятора
@@ -26,7 +24,6 @@
 #define MQTT_PORT 8883
 #define MQTT_CLIENT_ID "esp32-Ruslan_Chernyi"
 // WORKING TOPICS
-#define TOPIC_SENSORS "iot-course/Ruslan_Chernyi/sensors/data"
 #define TOPIC_COMMANDS "iot-course/Ruslan_Chernyi/commands/led"
 #define TOPIC_TELEMETRY "iot-course/Ruslan_Chernyi/telemetry"
 #define TOPIC_EVENTS    "iot-course/Ruslan_Chernyi/events"
@@ -37,7 +34,6 @@
 #define PUBLISH_INTERVAL 30000
 #define RECONNECT_INTERVAL 5000
 #define DEBOUNCE_DELAY 30
-#define MANUAL_PUBLISH_DELAY 200
 #define NTP_TIMEOUT 10000
 
 // Any epoch below this means NTP has not synced yet (ESP32 boots in 1970)
@@ -61,6 +57,7 @@ typedef struct {
 uint32_t lastReconectionAttempt = 0;
 uint32_t reconectionAttempts = 0;
 uint32_t lastPublish = 0;
+bool firstPublishDone = false;   // false = publish right after (re)connecting
 uint8_t g_buttonState = BUTTON_LOGIC_LOW;
 
 /***    Global objects      ***/
@@ -68,7 +65,7 @@ WiFiClientSecure wifiClient;
 PubSubClient mqttClient(wifiClient);
 DHT dht(SENSOR_DHT_PIN, DHTT_TYPE);
 
-// put function declarations here:
+/***    Function declarations   ***/
 bool connectWifi(void);
 void configureTLS(void);
 bool connectMqtt(void);
@@ -85,7 +82,6 @@ void publishLedEvent(bool ledOn);
 
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println("Старт");
   pinMode(SWITCH_PIN,INPUT_PULLUP);
@@ -102,8 +98,6 @@ void setup() {
     Serial.println("[NTP] Час не синхронізовано - продовжуємо, timestamp буде 0");
   }
   mqttClient.setServer(DOMAIN_ADDRESS, MQTT_PORT);
-  mqttClient.setKeepAlive(60);
-  mqttClient.setSocketTimeout(30);
   if (isWifiConnected()) {
     connectMqtt();
   }
@@ -117,6 +111,7 @@ void loop() {
     if (wasConnected) {
       // -3 = broker closed the socket (AWS does this on a Policy violation)
       wasConnected = false;
+      firstPublishDone = false;
       Serial.print("[MQTT] З'єднання розірвано, state=");
       Serial.println(mqttClient.state());
     }
@@ -142,7 +137,6 @@ void loop() {
   reconectionAttempts = 0;
 
   // first reading right after connecting, then every PUBLISH_INTERVAL
-  static bool firstPublishDone = false;
   if (!firstPublishDone || (now - lastPublish) > PUBLISH_INTERVAL) {
     firstPublishDone = true;
     lastPublish = now;
@@ -164,10 +158,7 @@ void loop() {
   }
 }
 
-// put function definitions here:
-
 bool connectWifi() {
-  ;
   Serial.println("Connecting to Wifi");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
@@ -296,9 +287,8 @@ void publishSensorData(float temperature, float humidity) {
 
     time_t now = currentTimestamp();
 
-    // Буфер: payload підріс з двох полів до чотирьох.
-    // snprintf обріже по межі й не впаде — але JSON прилетить
-    // битий, і правило його не розбере (Заняття 4)
+    // snprintf обріже рядок, якщо буфер замалий — JSON стане битим,
+    // і правило його не розбере. 160 байт вистачає з запасом
     char payload[160];
     snprintf(payload, sizeof(payload),
         "{\"device_id\":\"%s\",\"timestamp\":%lu,"
@@ -369,7 +359,6 @@ void checkButton(uint8_t buttonPin) {
   if (debounceStarted && (millis() - debounceStartTime >= DEBOUNCE_DELAY)) {
     if (buttonState != currentSavedButtonState) {
       currentSavedButtonState = buttonState;
-      // Send message to the queue if the button state is logic high
       if (buttonState == BUTTON_LOGIC_HIGH) {
         g_buttonState = BUTTON_LOGIC_HIGH;
         Serial.println("\nButton was pressed");

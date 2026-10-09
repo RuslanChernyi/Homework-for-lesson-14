@@ -42,7 +42,7 @@ def sensors_latest():
     return item
 
 @app.get("/sensors/history")
-def sensors_history(minutes: int = 30):
+def sensors_history(minutes: int = Query(30, ge=1, le=1440)):   # 1 хв … 24 год
     return db.get_history(minutes)
 
 @app.get("/events")

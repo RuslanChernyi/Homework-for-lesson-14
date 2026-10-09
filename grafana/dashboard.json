@@ -77,18 +77,6 @@
                             "type": "number"
                           }
                         ],
-                        "computed_columns": [
-                          {
-                            "selector": "",
-                            "text": "",
-                            "type": "string"
-                          },
-                          {
-                            "selector": "",
-                            "text": "",
-                            "type": "string"
-                          }
-                        ],
                         "filters": [],
                         "format": "table",
                         "global_query_id": "",
@@ -228,7 +216,7 @@
                         "root_selector": "",
                         "source": "url",
                         "type": "json",
-                        "url": "http://localhost:8000/sensors/latest",
+                        "url": "http://127.0.0.1:8000/sensors/latest",
                         "url_options": {
                           "data": "",
                           "method": "GET"

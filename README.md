@@ -130,7 +130,8 @@ grafana/dashboard.json       експорт дашборду (JSON Model)
 ```sql
 SELECT *,
        timestamp() AS received_at,
-       clientid()  AS client_id
+       clientid()  AS client_id,
+       topic(2)    AS student
 FROM 'iot-course/Ruslan_Chernyi/telemetry'
 ```
 
@@ -261,7 +262,7 @@ uvicorn main:app --reload           # http://127.0.0.1:8000, Swagger — /docs
 |---|---|
 | `GET /health` | `{"status":"ok"}` |
 | `GET /sensors/latest` | останній запис пристрою з DynamoDB (404, якщо даних немає) |
-| `GET /sensors/history?minutes=30` | записи за останні N хвилин |
+| `GET /sensors/history?minutes=30` | записи за останні N хвилин (`minutes` 1–1440) |
 | `GET /events?limit=20` | останні N подій з `iot_events`, найновіші згори (`limit` 1–100) |
 | `POST /actuators/led` | тіло `{"action":"set","value":"on"\|"off"}` → публікація в `commands/led`; інші значення → 422 |
 
