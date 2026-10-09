@@ -503,6 +503,96 @@
             }
           }
         }
+      },
+      "panel-5": {
+        "kind": "Panel",
+        "spec": {
+          "id": 5,
+          "title": "Останні події пристрою",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "yesoreyeram-infinity-datasource",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "eg0fpkbl6hog0a"
+                      },
+                      "spec": {
+                        "columns": [
+                          {
+                            "selector": "received_at",
+                            "text": "Час",
+                            "type": "timestamp_epoch"
+                          },
+                          {
+                            "selector": "event",
+                            "text": "Подія",
+                            "type": "string"
+                          },
+                          {
+                            "selector": "value",
+                            "text": "Значення",
+                            "type": "string"
+                          },
+                          {
+                            "selector": "error",
+                            "text": "Помилка",
+                            "type": "string"
+                          }
+                        ],
+                        "filters": [],
+                        "format": "table",
+                        "global_query_id": "",
+                        "parser": "backend",
+                        "root_selector": "",
+                        "source": "url",
+                        "type": "json",
+                        "url": "http://127.0.0.1:8000/events?limit=20",
+                        "url_options": {
+                          "data": "",
+                          "method": "GET"
+                        }
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.2.2",
+            "spec": {
+              "options": {
+                "showHeader": true,
+                "cellHeight": "sm",
+                "sortBy": [
+                  {
+                    "displayName": "Час",
+                    "desc": true
+                  }
+                ]
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          }
+        }
       }
     },
     "layout": {
@@ -547,6 +637,15 @@
                 "name": "panel-4"
               }
             }
+          },
+          {
+            "kind": "AutoGridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-5"
+              }
+            }
           }
         ]
       }
@@ -557,9 +656,9 @@
     "tags": [],
     "timeSettings": {
       "timezone": "browser",
-      "from": "2026-10-06T09:41:04.300Z",
-      "to": "2026-10-06T21:41:04.300Z",
-      "autoRefresh": "",
+      "from": "now-30m",
+      "to": "now",
+      "autoRefresh": "30s",
       "autoRefreshIntervals": [
         "5s",
         "10s",

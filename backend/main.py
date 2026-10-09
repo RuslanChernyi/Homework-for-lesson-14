@@ -1,7 +1,7 @@
 from typing import Literal
 
 from botocore.exceptions import ClientError
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -44,6 +44,10 @@ def sensors_latest():
 @app.get("/sensors/history")
 def sensors_history(minutes: int = 30):
     return db.get_history(minutes)
+
+@app.get("/events")
+def events(limit: int = Query(20, ge=1, le=100)):
+    return db.get_events(limit)
 
 @app.post("/actuators/led")
 def actuators_led(command: LedCommand):

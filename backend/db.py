@@ -8,9 +8,11 @@ from boto3.dynamodb.conditions import Key
 dynamodb = boto3.resource("dynamodb", region_name=os.getenv("AWS_DEFAULT_REGION"))
 
 TABLE_NAME = os.getenv("TABLE_NAME")
+EVENTS_TABLE_NAME = os.getenv("EVENTS_TABLE_NAME")
 DEVICE_ID = os.getenv("DEVICE_ID")
 
 table = dynamodb.Table(TABLE_NAME) # type: ignore
+events_table = dynamodb.Table(EVENTS_TABLE_NAME) # type: ignore
 
 # ═══════════════ Запити до таблиці ═══════════════
 def get_latest():
@@ -32,5 +34,15 @@ def get_history(minutes):
     response = table.query(
         KeyConditionExpression=Key("device_id").eq(DEVICE_ID)
                                & Key("received_at").gte(cutoff_ms),
+    )
+    return response["Items"]
+
+
+def get_events(limit):
+    """Останні N подій пристрою (led_changed, dht_read_failed) — найновіші згори."""
+    response = events_table.query(
+        KeyConditionExpression=Key("device_id").eq(DEVICE_ID),
+        ScanIndexForward=False,
+        Limit=limit,
     )
     return response["Items"]

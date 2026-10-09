@@ -1,51 +1,32 @@
+// Шаблон для include/secrets.h — скопіювати і вписати свої сертифікати:
+//   cp include/example.secrets.h include/secrets.h
+// secrets.h у .gitignore і в репозиторій не потрапляє.
+//
+// Wi-Fi (Wokwi-GUEST), endpoint, Client ID і топіки задані в src/main.cpp.
+
 #ifndef SECRETS_H
 #define SECRETS_H
 
-#include <pgmspace.h>
-
-// ============================================================================
-// Wi-Fi Credentials
-// ============================================================================
-#define WIFI_SSID "YOUR_WIFI_SSID"
-#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
-
-// ============================================================================
-// AWS IoT Core Configuration
-// ============================================================================
-// Знаходиться в AWS IoT Core -> Settings -> Domain configurations (або AWS CLI)
-#define AWS_IOT_ENDPOINT "xxxxxxxxx-ats.iot.eu-central-1.amazonaws.com"
-#define AWS_IOT_PORT 8883
-
-// Client ID для MQTT з'єднання
-#define THINGNAME "ESP32_DHT22_Sensor"
-
-// MQTT Topic для відправки телеметрії
-#define AWS_IOT_TOPIC "iot-course/YOUR_NAME/sensors/data"
-
-// ============================================================================
-// AWS Certificates & Keys
-// ============================================================================
-
-// Amazon Root CA 1
-// Отримати можна за посиланням: https://www.amazontrust.com/repository/AmazonRootCA1.pem
-static const char AWS_CERT_CA[] PROGMEM = R"EOF(
+// Amazon Root CA 1 (AmazonRootCA1.pem) — перевірка, що сервер справді AWS
+// https://www.amazontrust.com/repository/AmazonRootCA1.pem
+const char* root_ca = R"EOF(
 -----BEGIN CERTIFICATE-----
-YOUR_AMAZON_ROOT_CA_1_HERE
+PASTE_AMAZON_ROOT_CA_1_HERE
 -----END CERTIFICATE-----
 )EOF";
 
-// Device Certificate (xxxxxx-certificate.pem.crt)
-static const char AWS_CERT_CRT[] PROGMEM = R"KEY(
+// Сертифікат пристрою (xxxxxx-certificate.pem.crt) — «ось хто я»
+const char* device_cert = R"EOF(
 -----BEGIN CERTIFICATE-----
-YOUR_DEVICE_CERTIFICATE_HERE
+PASTE_DEVICE_CERTIFICATE_HERE
 -----END CERTIFICATE-----
-)KEY";
+)EOF";
 
-// Device Private Key (xxxxxx-private.pem.key)
-static const char AWS_CERT_PRIVATE[] PROGMEM = R"KEY(
+// Приватний ключ пристрою (xxxxxx-private.pem.key) — «паспорт справді мій»
+const char* private_key = R"EOF(
 -----BEGIN RSA PRIVATE KEY-----
-YOUR_DEVICE_PRIVATE_KEY_HERE
+PASTE_DEVICE_PRIVATE_KEY_HERE
 -----END RSA PRIVATE KEY-----
-)KEY";
+)EOF";
 
 #endif // SECRETS_H
