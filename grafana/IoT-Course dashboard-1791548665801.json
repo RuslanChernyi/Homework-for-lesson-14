@@ -5,8 +5,8 @@
     "name": "adbqbrw",
     "namespace": "default",
     "uid": "b798b5b8-f7fb-458f-a700-b26f363bb18a",
-    "resourceVersion": "1791314278498984",
-    "generation": 10,
+    "resourceVersion": "1791548618341009",
+    "generation": 11,
     "creationTimestamp": "2026-10-06T18:44:59Z",
     "labels": {
       "grafana.app/deprecatedInternalID": "4361626117660672"
@@ -15,7 +15,7 @@
       "grafana.app/createdBy": "user:cg0c3qptjhce8f",
       "grafana.app/saved-from-ui": "Grafana v13.2.2 (3db12332b6)",
       "grafana.app/updatedBy": "user:cg0c3qptjhce8f",
-      "grafana.app/updatedTimestamp": "2026-10-06T19:17:58Z"
+      "grafana.app/updatedTimestamp": "2026-10-09T12:23:38Z"
     }
   },
   "spec": {
@@ -430,7 +430,7 @@
                           {
                             "selector": "received_at",
                             "text": "Отримано",
-                            "type": "timestamp_epoch_s"
+                            "type": "timestamp_epoch"
                           }
                         ],
                         "filters": [],
