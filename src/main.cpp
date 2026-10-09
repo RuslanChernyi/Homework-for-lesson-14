@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <DHT.h>
 #include <PubSubClient.h>
 #include <WiFi.h>
@@ -46,6 +47,8 @@
 #define SWITCH_PIN 5
 #define SENSOR_DHT_PIN 4
 #define DHTT_TYPE DHT22
+#define LED_PIN 2
+
 
 /***    Structs           ***/
 typedef struct {
@@ -78,6 +81,7 @@ void publishReading(void);
 void publishSensorData(float temperature, float humidity);
 void publishSensorError(void);
 void onMessage(char *topic, byte *payload, unsigned int length);
+void publishLedEvent(bool ledOn);
 
 
 void setup() {
@@ -85,7 +89,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Старт");
   pinMode(SWITCH_PIN,INPUT_PULLUP);
-
+  pinMode(LED_PIN, OUTPUT);
   dht.begin();
   if (!connectWifi()) {
     // no blocking retry here - loop() keeps reconnecting every RECONNECT_INTERVAL
@@ -208,7 +212,69 @@ bool connectMqtt() {
 }
 
 void onMessage(char *topic, byte *payload, unsigned int length){
-  
+  // payload is NOT null-terminated - copy it into a proper C string for printing
+  char message[length + 1];
+  memcpy(message, payload, length);
+  message[length] = '\0';
+
+  Serial.print("[MQTT] Топік: ");
+  Serial.print(topic);
+  Serial.print(" | Payload: ");
+  Serial.println(message);
+
+  // exact match, not a prefix - ignore anything that isn't the LED command topic
+  if (strcmp(topic, TOPIC_COMMANDS) != 0) {
+    return;
+  }
+
+  // expected: {"action":"set","value":"on"} or {"action":"set","value":"off"}
+  JsonDocument doc;
+  DeserializationError err = deserializeJson(doc, message, length);
+  if (err) {
+    Serial.print("[LED] Невалідний JSON: ");
+    Serial.println(err.c_str());
+    return;
+  }
+
+  const char *action = doc["action"] | "";  // "" if the field is missing
+  const char *value  = doc["value"]  | "";
+
+  if (strcmp(action, "set") != 0) {
+    Serial.print("[LED] Невідома дія: ");
+    Serial.println(action);
+    return;
+  }
+
+  bool ledOn;
+  if (strcmp(value, "on") == 0) {
+    ledOn = true;
+  } else if (strcmp(value, "off") == 0) {
+    ledOn = false;
+  } else {
+    Serial.print("[LED] Невідоме значення: ");
+    Serial.println(value);
+    return;
+  }
+
+  digitalWrite(LED_PIN, ledOn ? HIGH : LOW);
+  Serial.println(ledOn ? "[LED] Увімкнено" : "[LED] Вимкнено");
+
+  // confirm only after the command was actually executed
+  publishLedEvent(ledOn);
+}
+
+void publishLedEvent(bool ledOn) {
+  char payload[128];
+  snprintf(payload, sizeof(payload),
+      "{\"device_id\":\"%s\",\"timestamp\":%lu,"
+      "\"event\":\"led_changed\",\"value\":\"%s\"}",
+      DEVICE_PAYLOAD_ID, (unsigned long)currentTimestamp(), ledOn ? "on" : "off");
+
+  Serial.print("[MQTT] Подія: ");
+  Serial.println(payload);
+
+  bool ok = mqttClient.publish(TOPIC_EVENTS, payload);
+  Serial.println(ok ? "[MQTT] OK" : "[MQTT] Помилка публікації");
 }
 
 void publishReading(void) {
