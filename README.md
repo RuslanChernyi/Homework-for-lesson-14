@@ -336,7 +336,7 @@ Grafana запущена локально на `http://localhost:3000` (дашб
 6. Через ≤ 30 с ця подія з'являється в панелі **Останні події пристрою** (і в `curl localhost:8000/events`).
 
 ## Приклад дашборду
-<img width="1920" height="1080" alt="Screenshot From 2026-10-09 16-48-06" src="https://github.com/user-attachments/assets/ff9c5fcd-374f-4eca-9f4f-df50eb2f6af0" />
+<img width="1823" height="962" alt="Screenshot From 2026-10-09 16-48-06" src="https://github.com/user-attachments/assets/82356559-c282-421f-b936-cc47ff726451" />
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/d40a4252-888b-48a7-aa1a-b60c663812e9" />
+<img width="1826" height="865" alt="Screenshot From 2026-10-09 16-48-11" src="https://github.com/user-attachments/assets/ec0fcb9a-d3a0-4f84-876a-eadbefca9d45" />
 
